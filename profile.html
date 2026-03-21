@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人资料 - 中国非遗文化传承平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f7f3ee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: #8c5c2d;
+            color: #fff;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .top-bar .logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .top-bar .user a {
+            color: #fff;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .top-bar .user span {
+            color: #ffd966;
+        }
+
+        .nav {
+            background: #6d4422;
+            padding: 14px 0;
+            text-align: center;
+        }
+
+        .nav a {
+            color: #fff;
+            margin: 0 12px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+            color: #ffd966;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        .profile-card {
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .profile-cover {
+            background: linear-gradient(135deg, #8c5c2d, #c98a4a);
+            height: 120px;
+        }
+
+        .avatar-section {
+            text-align: center;
+            margin-top: -60px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: #fff;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 56px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border: 4px solid #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .avatar-edit {
+            display: block;
+            font-size: 12px;
+            color: #8c5c2d;
+            margin-top: 8px;
+            cursor: pointer;
+        }
+        .profile-form {
+            padding: 20px 40px 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #5a3a2a;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0d5c8;
+            border-radius: 12px;
+            font-size: 16px;
+            background: #fefaf5;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8c5c2d;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-group input[readonly] {
+            background: #f0e8df;
+            cursor: not-allowed;
+        }
+
+        .interest-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .interest-tag {
+            padding: 8px 20px;
+            background: #f7f3ee;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            color: #5a3a2a;
+        }
+
+        .interest-tag:hover {
+            background: #e8ddd0;
+        }
+
+        .interest-tag.selected {
+            background: #8c5c2d;
+            color: #fff;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 14px;
+            background: #8c5c2d;
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-save:hover {
+            background: #6d4422;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 14px;
+            background: #e8ddd0;
+            color: #5a3a2a;
+            border: none;
+            border-radius: 40px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-cancel:hover {
+            background: #d4c4b2;
+        }
+
+        .stats-card {
+            background: #fef5e8;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #8c5c2d;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #9b7a5a;
+            margin-top: 5px;
+        }
+
+        .message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            color: #fff;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            display: none;
+        }
+
+        .message.success {
+            background: #27ae60;
+        }
+
+        .message.error {
+            background: #e74c3c;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 60px;
+            background: #fff;
+            border-radius: 24px;
+            color: #8c5c2d;
+        }
+
+        .login-prompt a {
+            color: #8c5c2d;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #2e241d;
+            color: #e9dbc9;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+        }        @media (max-width: 768px) {
+            .profile-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">🏮 中国非遗文化传承平台</div>
+        <div class="user" id="userArea">
+            <a href=" ">登录</a >
+            <a href="register.html">注册</a >
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="index.html">首页</a >
+        <a href="paper.html">剪纸艺术</a >
+        <a href="opera.html">京剧</a >
+        <a href="shadow.html">皮影戏</a >
+        <a href="iron.html">打铁花</a >
+        <a href="profile.html">个人中心</a >
+        <a href="checkin.html">每日打卡</a >
+        <a href="messageboard.html">留言板</a >
+        <a href="certificate.html">非遗证书</a >
+    </div>
+
+    <div class="container" id="mainContent">
+        <div class="login-prompt">
+            🔐 <a href="login.html">登录</a > 后可以查看和编辑个人资料
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>非遗文化传承 © 2026 | 守护非遗 · 赓续文脉</p >
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      const SUPABASE_URL = 'https://lpqlwlrvgdlsxqxstqks.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Olxzn4JDOU2lTNXKBQzkTg_DPYHThi3';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let selectedInterests = [];
+        let currentAvatar = '🏮';
+        const avatarList = ['🏮', '🎭', '✂️', '🔥', '🐉', '🌸', '🎋', '🎨', '📜', '⭐'];
+        
+        function showMessage(text, type = 'success') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+        
+        function changeAvatar() {
+            let currentIndex = avatarList.indexOf(currentAvatar);
+            let nextIndex = (currentIndex + 1) % avatarList.length;
+            currentAvatar = avatarList[nextIndex];
+            document.getElementById('avatar').textContent = currentAvatar;
+        }
+        
+        async function loadUserProfile() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            
+            if (!session) {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="login-prompt">
+                        🔐 <a href="login.html">登录</a > 后可以查看和编辑个人资料
+                    </div>
+                `;
+                return;
+            }
+            
+            currentUser = session.user;          // 更新顶部用户名
+            const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+            document.getElementById('userArea').innerHTML = `
+                <span>欢迎，${userName}</span>
+                <a href=" " onclick="logout()">退出</a >
+            `;
+            
+            // 渲染个人资料表单
+            renderProfileForm();
+            
+            // 加载已保存的数据
+            document.getElementById('email').value = currentUser.email;
+            document.getElementById('username').value = currentUser.user_metadata?.username || '';
+            document.getElementById('location').value = currentUser.user_metadata?.location || '';
+            document.getElementById('bio').value = currentUser.user_metadata?.bio || '';
+            currentAvatar = currentUser.user_metadata?.avatar || '🏮';
+            document.getElementById('avatar').textContent = currentAvatar;
+            
+            const savedInterests = currentUser.user_metadata?.interests || [];
+            selectedInterests = [...savedInterests];
+            
+            document.querySelectorAll('.interest-tag').forEach(tag => {
+                const interest = tag.dataset.interest;
+                if (savedInterests.includes(interest)) {
+                    tag.classList.add('selected');
+                }
+                tag.onclick = () => {
+                    tag.classList.toggle('selected');
+                    const int = tag.dataset.interest;
+                    if (tag.classList.contains('selected')) {
+                        if (!selectedInterests.includes(int)) {
+                            selectedInterests.push(int);
+                        }
+                    } else {
+                        selectedInterests = selectedInterests.filter(i => i !== int);
+                    }
+                };
+            });
+            
+            // 加载统计数据
+            loadStats();
+        }
+        
+        function renderProfileForm() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="profile-card">
+                    <div class="profile-cover"></div>
+                    <div class="avatar-section">
+                        <div class="avatar" id="avatar" onclick="changeAvatar()">🏮</div>
+                        <div class="avatar-edit" onclick="changeAvatar()">点击更换头像</div>
+                    </div>
+                    <form class="profile-form" id="profileForm">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input type="text" id="username" placeholder="请输入用户名" required>
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱</label>
+                            <input type="email" id="email" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>家乡 / 所在地</label>
+                            <input type="text" id="location" placeholder="例如：河南确山、陕西西安...">
+                        </div>
+                        <div class="form-group">
+                            <label>个人简介</label>
+                            <textarea id="bio" placeholder="介绍一下你自己，分享你对非遗文化的热爱..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>感兴趣的非遗项目</label>
+                            <div class="interest-group" id="interests">
+                                <div class="interest-tag" data-interest="剪纸">✂️ 剪纸艺术</div>
+                                <div class="interest-tag" data-interest="京剧">🎭 京剧</div>
+                                <div class="interest-tag" data-interest="皮影戏">🎬 皮影戏</div>
+                                <div class="interest-tag" data-interest="打铁花">🔥 打铁花</div>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="submit" class="btn-save">💾 保存资料</button>
+                            <a href="index.html" class="btn-cancel">返回首页</a >
+                        </div>
+                    </form>
+                    <div class="stats-card">
+                        <div class="stat-item"><div class="stat-number" id="favCount">0</div><div class="stat-label">收藏项目</div></div>
+                        <div class="stat-item"><div class="stat-number" id="visitCount">0</div><div class="stat-label">浏览记录</div></div>
+                        <div class="stat-item"><div class="stat-number" id="daysCount">0</div><div class="stat-label">加入天数</div></div>
+                    </div>
+                </div>
+            `;         // 重新绑定事件
+            document.getElementById('profileForm').addEventListener('submit', saveProfile);
+            window.changeAvatar = changeAvatar;
+        }
+        
+        async function loadStats() {
+            if (!currentUser) return;
+            
+            // 从 localStorage 获取收藏和浏览数据
+            const favorites = JSON.parse(localStorage.getItem(`favorites_${currentUser.id}`) || '[]');
+            const history = JSON.parse(localStorage.getItem(`history_${currentUser.id}`) || '[]');
+            
+            const createdAt = new Date(currentUser.created_at);
+            const now = new Date();
+            const days = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
+            
+            const favEl = document.getElementById('favCount');
+            const visitEl = document.getElementById('visitCount');
+            const daysEl = document.getElementById('daysCount');
+            if (favEl) favEl.textContent = favorites.length;
+            if (visitEl) visitEl.textContent = history.length;
+            if (daysEl) daysEl.textContent = days || 1;
+        }
+        
+        async function saveProfile(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const location = document.getElementById('location').value;
+            const bio = document.getElementById('bio').value;
+            
+            if (!username.trim()) {
+                showMessage('请输入用户名', 'error');
+                return;
+            }
+            
+            const { error } = await supabaseClient.auth.updateUser({
+                data: {
+                    username: username,
+                    location: location,
+                    bio: bio,
+                    avatar: currentAvatar,
+                    interests: selectedInterests
+                }
+            });
+            
+            if (error) {
+                showMessage('保存失败：' + error.message, 'error');
+            } else {
+                showMessage('✅ 资料保存成功！', 'success');
+                // 更新顶部显示的用户名
+                const userDiv = document.getElementById('userArea');
+                userDiv.innerHTML = `
+                    <span>欢迎，${username}</span>
+                    <a href=" " onclick="logout()">退出</a >
+                `;
+            }
+        }
+        
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+        window.logout = logout;
+        
+        // 检查登录状态
+        async function checkLoginAndLoad() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const userDiv = document.getElementById('userArea');
+            
+            if (session) {
+                const userName = session.user.user_metadata?.username || session.user.email.split('@')[0];
+                userDiv.innerHTML = `
+                    <span>欢迎，${userName}</span>
+                    <a href="#" onclick="logout()">退出</a >
+                `;
+                loadUserProfile();
+            } else {
+                userDiv.innerHTML = `
+                    <a href="login.html">登录</a >
+                    <a href="register.html">注册</a >
+                `;
+            }
+        }
+        
+        checkLoginAndLoad();
+    </script>
+</body>
+</html>

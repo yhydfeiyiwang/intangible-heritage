@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日打卡 - 中国非遗文化传承平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f7f3ee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: #8c5c2d;
+            color: #fff;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .top-bar .logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .top-bar .user a {
+            color: #fff;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .top-bar .user span {
+            color: #ffd966;
+        }
+
+        .nav {
+            background: #6d4422;
+            padding: 14px 0;
+            text-align: center;
+        }
+
+        .nav a {
+            color: #fff;
+            margin: 0 12px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover, .nav a.active {
+            text-decoration: underline;
+            color: #ffd966;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        /* 打卡卡片 */
+        .checkin-card {
+            background: #fff;
+            border-radius: 28px;
+            padding: 35px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #fff 0%, #fef5e8 100%);
+        }
+
+        .checkin-icon {
+            font-size: 80px;
+            margin-bottom: 15px;
+        }
+
+        .checkin-card h2 {
+            color: #8c5c2d;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .checkin-card p {
+            color: #9b7a5a;
+            margin-bottom: 25px;
+        }
+
+        .checkin-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            text-align: center;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            min-width: 100px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #8c5c2d;
+        }
+
+        .stat-label {
+            color: #9b7a5a;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .checkin-btn {
+            background: #8c5c2d;
+            color: #fff;
+            border: none;
+            padding: 14px 50px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(140,92,45,0.3);
+        }
+
+        .checkin-btn:hover {
+            background: #6d4422;
+            transform: scale(1.02);
+        }
+
+        .checkin-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .checkin-btn.already {
+            background: #27ae60;
+            cursor: default;
+        }
+
+        .checkin-btn.already:hover {
+            background: #27ae60;
+            transform: none;
+        }        /* 奖励提示 */
+        .reward-badge {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #fff6e8;
+            border-radius: 40px;
+            display: inline-block;
+            font-size: 14px;
+            color: #8c5c2d;
+        }
+
+        /* 日历 */
+        .calendar-card {
+            background: #fff;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .calendar-month {
+            font-size: 20px;
+            font-weight: bold;
+            color: #8c5c2d;
+            background: #fef5e8;
+            padding: 8px 20px;
+            border-radius: 40px;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 12px;
+        }
+
+        .calendar-nav button {
+            background: #f7f3ee;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .calendar-nav button:hover {
+            background: #e8ddd0;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            color: #8c5c2d;
+            padding: 12px 0;
+            border-bottom: 2px solid #e8ddd0;
+            margin-bottom: 10px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            padding: 10px 0;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 14px;
+            background: #fefaf5;
+            transition: all 0.2s;
+            cursor: default;
+            position: relative;
+        }
+
+        .day.checked {
+            background: #8c5c2d;
+            color: #fff;
+        }
+
+        .day.checked::after {
+            content: "✓";
+            position: absolute;
+            font-size: 10px;
+            bottom: 2px;
+            right: 2px;
+            color: #ffd966;
+        }
+
+        .day.today {
+            border: 2px solid #ffd966;
+            font-weight: bold;
+        }
+
+        .day.other-month {
+            color: #ccc;
+            background: #faf5ed;
+        }
+
+        .day.highlight {
+            background: #ffd966;
+            color: #5a3a2a;
+        }
+
+        /* 连续打卡奖励提示 */
+        .streak-tip {
+            margin-top: 20px;
+            padding: 15px;
+            background: #fef5e8;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 14px;
+            color: #8c5c2d;
+        }
+
+        .streak-tip .fire {
+            font-size: 18px;
+        }
+
+        /* 登录提示 */
+        .login-prompt {
+            text-align: center;
+            padding: 60px;
+            background: #fff;
+            border-radius: 24px;
+            color: #8c5c2d;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .login-prompt .icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .login-prompt a {
+            color: #8c5c2d;
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #9b7a5a;
+        }
+
+        .footer {
+            background: #2e241d;
+            color: #e9dbc9;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .checkin-stats {
+                gap: 20px;
+            }
+            .stat-number {
+                font-size: 28px;
+            }
+            .stat-box {
+                padding: 10px 18px;
+                min-width: 80px;
+            }
+            .day {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">🏮 中国非遗文化传承平台</div>
+        <div class="user" id="userArea">
+            <a href=" ">登录</a >
+            <a href="register.html">注册</a >
+        </div>
+    </div>   <div class="nav">
+        <a href=" ">首页</a >
+        <a href="paper.html">剪纸艺术</a >
+        <a href="opera.html">京剧</a >
+        <a href="shadow.html">皮影戏</a >
+        <a href="iron.html">打铁花</a >
+        <a href="profile.html">个人中心</a >
+        <a href="checkin.html" class="active">每日打卡</a >
+        <a href="messageboard.html">留言板</a >
+        <a href="certificate.html">非遗证书</a >
+    </div>
+
+    <div class="container" id="mainContent">
+        <div class="loading">加载中...</div>
+    </div>
+
+    <div class="footer">
+        <p>非遗文化传承 © 2026 | 守护非遗 · 赓续文脉</p >
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ========== Supabase 配置 ==========
+        const SUPABASE_URL = 'https://lpqlwlrvgdlsxqxstqks.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_Olxzn4JDOU2lTNXKBQzkTg_DPYHThi3';
+
+
+        // ====================================
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let checkinDates = [];
+        let currentDate = new Date();
+        
+        // 检查登录状态
+        async function checkLoginStatus() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const userDiv = document.getElementById('userArea');
+            
+            if (session) {
+                currentUser = session.user;
+                const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+                userDiv.innerHTML = `<span>欢迎，${userName}</span><a href="#" onclick="logout()">退出</a >`;
+                await loadCheckinData();
+                renderCheckinPage();
+            } else {
+                userDiv.innerHTML = `<a href="login.html">登录</a ><a href="register.html">注册</a >`;
+                renderLoginPrompt();
+            }
+        }
+        
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+        window.logout = logout;
+        
+        // 渲染登录提示
+        function renderLoginPrompt() {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="login-prompt">
+                    <div class="icon">📅</div>
+                    <h3>登录后可以每日打卡</h3>
+                    <p><a href="login.html">立即登录</a > 或 <a href="register.html">注册账号</a ></p >
+                    <p style="margin-top: 15px; font-size: 14px;">连续打卡可获得非遗积分，解锁更多成就！</p >
+                </div>
+            `;
+        }
+        
+        // 加载打卡数据
+        async function loadCheckinData() {
+            const { data, error } = await supabaseClient
+                .from('checkins')
+                .select('checkin_date')
+                .eq('user_id', currentUser.id)
+                .order('checkin_date', { ascending: true });
+            
+            if (error) {
+                console.error('加载打卡数据失败:', error);
+                checkinDates = [];
+            } else {
+                checkinDates = data.map(d => d.checkin_date);
+            }
+        }
+        
+        // 渲染打卡页面
+        function renderCheckinPage() {
+            const totalDays = checkinDates.length;
+            const continuousDays = calculateContinuousDays();
+            const points = totalDays * 10;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const hasCheckedToday = checkinDates.includes(todayStr);
+            
+            document.getElementById('mainContent').innerHTML = `
+                <div class="checkin-card">
+                    <div class="checkin-icon">📅</div>
+                    <h2>非遗文化打卡</h2>
+                    <p>每天坚持打卡，传承中华文化</p >
+                    <div class="checkin-stats">
+                        <div class="stat-box">
+                            <div class="stat-number">${totalDays}</div>
+                            <div class="stat-label">累计打卡</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">${continuousDays}</div>
+                            <div class="stat-label">连续打卡</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">${points}</div>
+                            <div class="stat-label">非遗积分</div>
+                        </div>
+                    </div>
+                    <button class="checkin-btn ${hasCheckedToday ? 'already' : ''}" id="checkinBtn" ${hasCheckedToday ? 'disabled' : ''}>
+                        ${hasCheckedToday ? '✅ 今日已打卡' : '📅 今日打卡 +10积分'}
+                    </button>
+                    ${getStreakRewardMessage(continuousDays)}
+                </div>
+                
+                <div class="calendar-card">
+                    <div class="calendar-header">
+                        <span class="calendar-month" id="currentMonth">${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月</span>
+                        <div class="calendar-nav">
+                            <button onclick="prevMonth()">◀ 上月</button>
+                            <button onclick="nextMonth()">下月 ▶</button>
+                        </div>
+                    </div>
+                    <div class="weekdays">
+                        <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+                    </div>
+                    <div class="days" id="daysGrid"></div>
+                    <div class="streak-tip">
+                        <span class="fire">🔥</span> 连续打卡7天可获得额外20积分奖励！
+                    </div>
+                </div>
+            `;
+            
+            renderCalendar();            // 绑定打卡按钮事件
+            if (!hasCheckedToday) {
+                document.getElementById('checkinBtn').addEventListener('click', doCheckin);
+            }
+        }
+        
+        // 计算连续打卡天数
+        function calculateContinuousDays() {
+            if (checkinDates.length === 0) return 0;
+            
+            let continuous = 0;
+            let checkDate = new Date();
+            
+            while (true) {
+                const dateStr = checkDate.toISOString().split('T')[0];
+                if (checkinDates.includes(dateStr)) {
+                    continuous++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            return continuous;
+        }
+        
+        // 获取连续打卡奖励提示
+        function getStreakRewardMessage(continuousDays) {
+            if (continuousDays >= 7) {
+                return `<div class="reward-badge">🎉 恭喜！连续打卡${continuousDays}天，获得${Math.floor(continuousDays / 7) * 20}额外积分！</div>`;
+            } else if (continuousDays >= 3) {
+                return `<div class="reward-badge">🌟 已连续打卡${continuousDays}天，再坚持${7 - continuousDays}天可获得额外积分！</div>`;
+            }
+            return '';
+        }
+        
+        // 执行打卡
+        async function doCheckin() {
+            if (!currentUser) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (checkinDates.includes(today)) {
+                alert('今日已打卡！');
+                return;
+            }
+            
+            const btn = document.getElementById('checkinBtn');
+            btn.disabled = true;
+            btn.textContent = '打卡中...';
+            
+            const { error } = await supabaseClient
+                .from('checkins')
+                .insert({
+                    user_id: currentUser.id,
+                    checkin_date: today
+                });
+            
+            if (error) {
+                alert('打卡失败：' + error.message);
+                btn.disabled = false;
+                btn.textContent = '📅 今日打卡 +10积分';
+            } else {
+                checkinDates.push(today);
+                const newContinuous = calculateContinuousDays();
+                const pointsEarned = 10 + (Math.floor(newContinuous / 7) * 20);
+                
+                let message = `🎉 打卡成功！获得10积分`;
+                if (newContinuous % 7 === 0 && newContinuous > 0) {
+                    message += ` + 连续${newContinuous}天奖励20积分！`;
+                }
+                alert(message);
+                
+                renderCheckinPage();
+            }
+        }
+        window.doCheckin = doCheckin;
+        
+        // 渲染日历
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startWeekday = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            
+            document.getElementById('currentMonth').textContent = `${year}年${month + 1}月`;
+            
+            let daysHtml = '';
+            
+            // 上个月剩余天数
+            for (let i = startWeekday - 1; i >= 0; i--) {
+                let day = prevMonthDays - i;
+                daysHtml += `<div class="day other-month">${day}</div>`;
+            }
+            
+            // 当月天数
+            for (let d = 1; d <= daysInMonth; d++) {
+                let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                let isChecked = checkinDates.includes(dateStr);
+                let isToday = new Date().toISOString().split('T')[0] === dateStr;
+                let classes = 'day';
+                if (isChecked) classes += ' checked';
+                if (isToday) classes += ' today';
+                daysHtml += `<div class="${classes}">${d}</div>`;
+            }
+            
+            // 下个月补充
+            let totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+            let remaining = totalCells - (startWeekday + daysInMonth);
+            for (let i = 1; i <= remaining; i++) {
+                daysHtml += `<div class="day other-month">${i}</div>`;
+            }
+            
+            const daysGrid = document.getElementById('daysGrid');
+            if (daysGrid) daysGrid.innerHTML = daysHtml;
+        }
+        
+        function prevMonth() {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        }
+        window.prevMonth = prevMonth;
+        
+        function nextMonth() {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        }
+        window.nextMonth = nextMonth;
+        
+        // 初始化
+        checkLoginStatus();
+    </script>
+</body>
+</html>
