@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>留言板 - 中国非遗文化传承平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        body { background: #f7f3ee; min-height: 100vh; display: flex; flex-direction: column; }
+        .top-bar { background: #8c5c2d; color: #fff; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .top-bar .logo { font-size: 18px; font-weight: bold; }
+        .top-bar .user a { color: #fff; margin-left: 20px; text-decoration: none; }
+        .top-bar .user span { color: #ffd966; }
+        .nav { background: #6d4422; padding: 14px 0; text-align: center; }
+        .nav a { color: #fff; margin: 0 18px; text-decoration: none; font-size: 16px; }
+        .nav a:hover, .nav a.active { text-decoration: underline; color: #ffd966; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; flex: 1; }
+        
+        .message-input {
+            background: #fff;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .message-input textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e0d5c8;
+            border-radius: 16px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+        .message-input textarea:focus { outline: none; border-color: #8c5c2d; }
+        .message-submit {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #8c5c2d;
+            color: #fff;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .message-submit:hover { background: #6d4422; }
+        
+        .message-list {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        .message-item {
+            border-bottom: 1px solid #f0e8df;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        .message-avatar {
+            width: 50px;
+            height: 50px;
+            background: #e8ddd0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .message-content { flex: 1; }
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .message-name { font-weight: bold; color: #5a3a2a; }
+        .message-time { font-size: 12px; color: #9b7a5a; }
+        .message-text { color: #4a3a2a; line-height: 1.6; margin-bottom: 10px; }
+        .message-actions { display: flex; gap: 15px; }
+        .message-like {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #9b7a5a;
+        }
+        .message-like:hover { color: #ff6b6b; }
+        .message-delete {
+            cursor: pointer;
+            font-size: 13px;
+            color: #c33;
+            display: none;
+        }
+        .message-item.own .message-delete { display: inline; }
+        .login-prompt {
+            text-align: center;
+            padding: 40px;
+            background: #fef5e8;
+            border-radius: 16px;
+            color: #8c5c2d;
+        }
+        .login-prompt a { color: #8c5c2d; font-weight: bold; }
+        .footer { background: #2e241d; color: #e9dbc9; text-align: center; padding: 25px; margin-top: 30px; }        @media (max-width: 768px) { .nav a { margin: 0 10px; font-size: 14px; } }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">🏮 中国非遗文化传承平台</div>
+        <div class="user" id="userArea"><a href=" ">登录</a ><a href="register.html">注册</a ></div>
+    </div>
+    <div class="nav">
+        <a href="index.html">首页</a ><a href="paper.html">剪纸艺术</a ><a href="opera.html">京剧</a >
+        <a href="shadow.html">皮影戏</a ><a href="iron.html">打铁花</a ><a href="profile.html">个人中心</a >
+        <a href="checkin.html">每日打卡</a ><a href="messageboard.html" class="active">留言板</a >
+    </div>
+    <div class="container">
+        <div id="messageArea"></div>
+    </div>
+    <div class="footer"><p>非遗文化传承 © 2026 | 守护非遗 · 赓续文脉</p ></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://lpalwlrvgdlslsxqxsxtqks.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_iVeYN3aI8DpUhwy5Z6k6g_uUgvm...';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        
+        async function checkLogin() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userDiv = document.getElementById('userArea');
+            if (session) {
+                currentUser = session.user;
+                const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+                userDiv.innerHTML = `<span>欢迎，${userName}</span><a href="#" onclick="logout()">退出</a >`;
+                renderMessageBoard();
+                loadMessages();
+            } else {
+                userDiv.innerHTML = `<a href="login.html">登录</a ><a href="register.html">注册</a >`;
+                document.getElementById('messageArea').innerHTML = `<div class="login-prompt">💬 <a href="login.html">登录</a > 后可以留言和点赞</div>`;
+            }
+        }
+        
+        async function logout() { await supabase.auth.signOut(); window.location.reload(); }
+        window.logout = logout;
+        
+        function renderMessageBoard() {
+            document.getElementById('messageArea').innerHTML = `
+                <div class="message-input">
+                    <textarea id="messageInput" placeholder="分享你对非遗文化的感受、建议或故事..."></textarea>
+                    <button class="message-submit" onclick="submitMessage()">💬 发表留言</button>
+                </div>
+                <div class="message-list" id="messageList"></div>
+            `;
+        }
+        
+        async function loadMessages() {
+            const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: false });
+            renderMessages(data || []);
+        }
+        
+        function renderMessages(messages) {
+            const container = document.getElementById('messageList');
+            if (!container) return;
+            if (messages.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:#9b7a5a;">✨ 还没有留言，来抢沙发吧 ✨</div>';
+                return;
+            }
+            container.innerHTML = messages.map(msg => {
+                const isOwn = currentUser && msg.user_id === currentUser.id;
+                return `
+                    <div class="message-item ${isOwn ? 'own' : ''}" data-id="${msg.id}">
+                        <div class="message-avatar">${msg.user_avatar || '👤'}</div>
+                        <div class="message-content">
+                            <div class="message-header">
+                                <span class="message-name">${escapeHtml(msg.user_name)}</span>
+                                <span class="message-time">${formatTime(msg.created_at)}</span>
+                            </div>
+                            <div class="message-text">${escapeHtml(msg.content)}</div>
+                            <div class="message-actions">
+                                <div class="message-like" onclick="likeMessage('${msg.id}', this)">❤️ <span>${msg.likes || 0}</span></div>
+                                ${isOwn ? `<div class="message-delete" onclick="deleteMessage('${msg.id}')">删除</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }async function submitMessage() {
+            const input = document.getElementById('messageInput');
+            const content = input.value.trim();
+            if (!content) { alert('请输入留言内容'); return; }
+            const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+            const userAvatar = currentUser.user_metadata?.avatar || '👤';
+            const { error } = await supabase.from('messages').insert({
+                user_id: currentUser.id, user_name: userName, user_avatar: userAvatar, content: content, likes: 0
+            });
+            if (error) { alert('发表失败：' + error.message); } 
+            else { input.value = ''; loadMessages(); }
+        }
+        window.submitMessage = submitMessage;
+        
+        async function likeMessage(messageId, element) {
+            if (!currentUser) { alert('请先登录'); return; }
+            const { data: msg } = await supabase.from('messages').select('likes').eq('id', messageId).single();
+            const newLikes = (msg?.likes || 0) + 1;
+            await supabase.from('messages').update({ likes: newLikes }).eq('id', messageId);
+            const likeSpan = element.querySelector('span');
+            if (likeSpan) likeSpan.textContent = newLikes;
+        }
+        window.likeMessage = likeMessage;
+        
+        async function deleteMessage(messageId) {
+            if (!confirm('确定删除这条留言吗？')) return;
+            await supabase.from('messages').delete().eq('id', messageId);
+            loadMessages();
+        }
+        window.deleteMessage = deleteMessage;
+        
+        function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        function formatTime(timestamp) {
+            const date = new Date(timestamp), now = new Date(), diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`;
+            return `${Math.floor(diff / 86400)}天前`;
+        }
+        
+        checkLogin();
+    </script>
+</body>
+</html>

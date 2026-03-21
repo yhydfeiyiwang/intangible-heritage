@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打铁花 - 中国非遗文化传承平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f7f3ee;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            background: #8c5c2d;
+            color: #fff;
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .top-bar .logo {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .top-bar .user a {
+            color: #fff;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .top-bar .user span {
+            color: #ffd966;
+        }
+
+        .nav {
+            background: #6d4422;
+            padding: 14px 0;
+            text-align: center;
+        }
+
+        .nav a {
+            color: #fff;
+            margin: 0 20px;
+            text-decoration: none;
+            font-size: 17px;
+        }
+
+        .nav a:hover, .nav a.active {
+            text-decoration: underline;
+            color: #ffd966;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+        }
+
+        /* 头部操作栏 */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .favorite-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #f7f3ee;
+            border: 2px solid #e0d5c8;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .favorite-btn.favorited {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+            color: #fff;
+        }
+
+        .favorite-btn.favorited .heart {
+            color: #fff;
+        }
+
+        .heart {
+            font-size: 20px;
+            color: #ff6b6b;
+        }
+
+        .container h2 {
+            color: #8c5c2d;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .container p {
+            font-size: 17px;
+            line-height: 1.9;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .master-box {
+            background: #f7f3ee;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .master-box h3 {
+            color: #8c5c2d;
+            margin-bottom: 10px;
+        }      /* 评论区域 */
+        .comments-section {
+            margin-top: 40px;
+            border-top: 2px solid #e8ddd0;
+            padding-top: 30px;
+        }
+
+        .comments-title {
+            font-size: 22px;
+            color: #8c5c2d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comment-input-area {
+            background: #fefaf5;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .comment-input-area textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e0d5c8;
+            border-radius: 12px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .comment-input-area textarea:focus {
+            outline: none;
+            border-color: #8c5c2d;
+        }
+
+        .comment-submit {
+            margin-top: 12px;
+            padding: 10px 28px;
+            background: #8c5c2d;
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .comment-submit:hover {
+            background: #6d4422;
+        }
+
+        .comment-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 评论列表 */
+        .comment-item {
+            background: #fff;
+            border-bottom: 1px solid #f0e8df;
+            padding: 20px 0;
+            display: flex;
+            gap: 15px;
+        }
+
+        .comment-avatar {
+            width: 48px;
+            height: 48px;
+            background: #e8ddd0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .comment-name {
+            font-weight: bold;
+            color: #5a3a2a;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #9b7a5a;
+        }
+
+        .comment-text {
+            color: #4a3a2a;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .comment-like {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #9b7a5a;
+            transition: color 0.2s;
+        }
+
+        .comment-like:hover {
+            color: #ff6b6b;
+        }
+
+        .comment-like.liked {
+            color: #ff6b6b;
+        }
+
+        .comment-delete {
+            cursor: pointer;
+            font-size: 13px;
+            color: #c33;
+            display: none;
+        }
+
+        .comment-delete:hover {
+            text-decoration: underline;
+        }
+
+        .comment-item.own .comment-delete {
+            display: inline;
+        }
+
+        .no-comments {
+            text-align: center;
+            color: #9b7a5a;
+            padding: 40px;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 30px;
+            background: #fef5e8;
+            border-radius: 12px;
+            color: #8c5c2d;
+        }
+
+        .login-prompt a {
+            color: #8c5c2d;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #2e241d;
+            color: #e9dbc9;
+            text-align: center;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">🏮 中国非遗文化传承平台</div>
+        <div class="user" id="userArea">
+            <a href=" ">登录</a >
+            <a href="register.html">注册</a >
+        </div>
+    </div>
+
+    <div class="nav">
+        <a href="index.html">首页</a >
+        <a href="paper.html">剪纸艺术</a >
+        <a href="opera.html">京剧</a >
+        <a href="shadow.html">皮影戏</a >
+        <a href="iron.html" class="active">打铁花</a >
+        <a href="profile.html">个人中心</a >
+    </div>
+
+    <div class="container">
+        <!-- 操作栏：收藏按钮 -->
+        <div class="action-bar">
+            <div class="favorite-btn" id="favoriteBtn" onclick="toggleFavorite()">
+                <span class="heart">❤️</span>
+                <span id="favoriteText">收藏</span>
+            </div>
+        </div>   <h2>打铁花 · 国家级非物质文化遗产</h2>
+        <p>打铁花，又称"打铁水"或"打树花"，是一种流传于河南、山西等地的传统民间焰火表演，素有"民间焰火之最"的美誉。2008年，河南省确山县申报的打铁花被列入第二批国家级非物质文化遗产名录。打铁花起源于北宋，鼎盛于明清，已有千余年历史。其诞生与古代冶铁业密切相关，最初是铁匠和道士祭祀太上老君、祈求平安的仪式活动，后逐渐演变为节庆娱乐。因"花"与"发"谐音，打铁花也寓意"越打越发"，象征事业兴旺。打铁花是一门惊险的"勇敢者的游戏"。表演时需将生铁熔化成1600℃至1700℃的铁水，表演者赤膊上阵，用特制的柳木花棒将铁水奋力击向高空。铁水遇冷迸溅，瞬间化作漫天金花，如流星雨般璀璨夺目。表演常搭配花棚、鞭炮、舞龙等，形成"龙穿花"的壮观场面。打铁花以"奇、绝、险"著称。其魅力在于铁水被击打得越高越散，冷却越快，反而不易烫伤表演者。这项技艺融合了力量、技巧与勇气，展现出劳动人民的智慧与浪漫。</p >
+
+        <div class="master-box">
+            <h3>代表性传承人：杨建军</h3>
+            <p>杨建军，1949年生于河南确山，是国家级非物质文化遗产"打铁花"的代表性传承人，被誉为确山铁花的"复兴者"。杨建军自幼被打铁花的壮丽景象深深震撼。1979年，他拜民国时期确山打铁花会会长李万发为师，系统学习这门濒临失传的技艺。当时确山铁花已中断演出数十年，杨建军经过多年挖掘整理，终于在1988年元宵节成功恢复了中断二十多年的确山打铁花表演，让这门千年绝技重现人间。2008年，杨建军推动确山打铁花成功入选国家级非物质文化遗产名录。他打破传统"传男不传女"的行规，广收门徒，组建了"确山铁花队"，并培养出全国第一支女子铁花队。他还收网络博主"江寻千"（九月）为徒，借助新媒体传播技艺。如今，他的团队已发展到近40人规模。杨建军多次带领团队登上重大舞台。2017年，确山铁花亮相央视春晚；2025年央视春晚开场秀《迎福》中，杨建军一棒铁花冲天而起，再次让全国观众领略到这门技艺的震撼魅力。在杨建军的努力下，打铁花从濒临失传的古老技艺，重新成为活跃在节庆和景区中的"中式浪漫"，实现了非物质文化遗产的活态传承。</p >
+        </div>
+
+        <!-- 评论区域 -->
+        <div class="comments-section" id="commentsSection">
+            <div class="comments-title">
+                💬 评论区
+                <span id="commentCount">(0)</span>
+            </div>
+
+            <div id="commentArea">
+                <!-- 动态加载评论输入框和列表 -->
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>非遗文化传承 © 2026 | 守护非遗 · 赓续文脉</p >
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+       const SUPABASE_URL = 'https://lpalwlrvgdlslsxqxsxtqks.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_iVeYN3aI8DpUhwy5Z6k6g_uUgvm...';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // 当前页面类型
+        const ITEM_TYPE = 'iron';
+        const ITEM_NAME = '打铁花';
+        
+        let currentUser = null;
+        let isFavorited = false;
+        
+        // 检查登录状态
+        async function checkLoginStatus() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userDiv = document.getElementById('userArea');
+            
+            if (session) {
+                currentUser = session.user;
+                const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+                userDiv.innerHTML = `
+                    <span>欢迎，${userName}</span>
+                    <a href=" " onclick="logout()">退出</a >
+                `;
+                // 登录后加载收藏状态和评论
+                checkFavoriteStatus();
+                loadComments();
+                renderCommentArea();
+            } else {
+                userDiv.innerHTML = `
+                    <a href="login.html">登录</a >
+                    <a href="register.html">注册</a >
+                `;
+                renderLoginPrompt();
+            }
+        }
+        
+        // 退出登录
+        async function logout() {
+            await supabase.auth.signOut();
+            window.location.reload();
+        }
+        window.logout = logout;
+        
+        // 检查收藏状态
+        async function checkFavoriteStatus() {
+            if (!currentUser) return;
+            
+            const { data, error } = await supabase
+                .from('favorites')
+                .select('id')
+                .eq('user_id', currentUser.id)
+                .eq('item_type', ITEM_TYPE)
+                .single();
+            
+            if (data && !error) {
+                isFavorited = true;
+                updateFavoriteUI();
+            }
+        }
+        
+        // 更新收藏按钮UI
+        function updateFavoriteUI() {
+            const btn = document.getElementById('favoriteBtn');
+            const textSpan = document.getElementById('favoriteText');
+            if (isFavorited) {
+                btn.classList.add('favorited');
+                textSpan.textContent = '已收藏';
+            } else {
+                btn.classList.remove('favorited');
+                textSpan.textContent = '收藏';
+            }
+        }
+        
+        // 切换收藏
+        async function toggleFavorite() {
+            if (!currentUser) {
+                alert('请先登录后再收藏');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            if (isFavorited) {
+                // 取消收藏
+                const { error } = await supabase
+                    .from('favorites')
+                    .delete()
+                    .eq('user_id', currentUser.id)
+                    .eq('item_type', ITEM_TYPE);
+                
+                if (!error) {
+                    isFavorited = false;
+                    updateFavoriteUI();
+                    showMessage('已取消收藏', 'info');
+                }
+            } else {
+                // 添加收藏
+                const { error } = await supabase
+                    .from('favorites')
+                    .insert({
+                        user_id: currentUser.id,
+                        item_type: ITEM_TYPE,
+                        item_name: ITEM_NAME
+                    });
+                
+                if (!error) {
+                    isFavorited = true;
+                    updateFavoriteUI();
+                    showMessage('收藏成功！', 'success');
+                }
+            }
+        }
+        window.toggleFavorite = toggleFavorite;
+        
+        // 加载评论列表
+        async function loadComments() {
+            const { data, error } = await supabase
+                .from('comments')
+                .select('*')
+                .eq('item_type', ITEM_TYPE)
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('加载评论失败:', error);
+                return;
+            }
+            
+            renderCommentsList(data || []);
+            document.getElementById('commentCount').textContent = `(${data?.length || 0})`;
+        }
+        
+        // 渲染评论列表
+        function renderCommentsList(comments) {
+            const container = document.getElementById('commentArea');
+            if (!container) return;
+            
+            if (comments.length === 0) {
+                const existingList = document.querySelector('.comments-list');
+                if (existingList) existingList.remove();
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'no-comments';
+                emptyDiv.innerHTML = '✨ 还没有评论，快来抢沙发吧 ✨';
+                container.appendChild(emptyDiv);
+                return;
+            }          // 移除旧的评论列表
+            const oldList = document.querySelector('.comments-list');
+            if (oldList) oldList.remove();
+            
+            const commentsList = document.createElement('div');
+            commentsList.className = 'comments-list';
+            
+            comments.forEach(comment => {
+                const isOwn = currentUser && comment.user_id === currentUser.id;
+                const commentDiv = document.createElement('div');
+                commentDiv.className = `comment-item ${isOwn ? 'own' : ''}`;
+                commentDiv.dataset.id = comment.id;
+                
+                commentDiv.innerHTML = `
+                    <div class="comment-avatar">${comment.user_avatar || '👤'}</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-name">${escapeHtml(comment.user_name)}</span>
+                            <span class="comment-time">${formatTime(comment.created_at)}</span>
+                        </div>
+                        <div class="comment-text">${escapeHtml(comment.content)}</div>
+                        <div class="comment-actions">
+                            <div class="comment-like" onclick="likeComment('${comment.id}', this)">
+                                ❤️ <span>${comment.likes || 0}</span>
+                            </div>
+                            ${isOwn ? `<div class="comment-delete" onclick="deleteComment('${comment.id}')">删除</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                commentsList.appendChild(commentDiv);
+            });
+            
+            container.appendChild(commentsList);
+        }
+        
+        // 渲染评论输入框
+        function renderCommentArea() {
+            const container = document.getElementById('commentArea');
+            if (!currentUser) return;
+            
+            const existingInput = document.querySelector('.comment-input-area');
+            if (existingInput) return;
+            
+            const inputDiv = document.createElement('div');
+            inputDiv.className = 'comment-input-area';
+            inputDiv.innerHTML = `
+                <textarea id="commentInput" placeholder="写下你的想法..."></textarea>
+                <button class="comment-submit" onclick="submitComment()">发表评论</button>
+            `;
+            container.insertBefore(inputDiv, container.firstChild);
+        }
+        
+        // 渲染登录提示
+        function renderLoginPrompt() {
+            const container = document.getElementById('commentArea');
+            if (!container) return;
+            
+            container.innerHTML = `
+                <div class="login-prompt">
+                    💬 <a href=" ">登录</a > 后可以发表评论和收藏
+                </div>
+            `;
+        }
+        
+        // 发表评论
+        async function submitComment() {
+            const input = document.getElementById('commentInput');
+            const content = input.value.trim();
+            
+            if (!content) {
+                alert('请输入评论内容');
+                return;
+            }
+            
+            const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+            const userAvatar = currentUser.user_metadata?.avatar || '👤';
+            
+            const { data, error } = await supabase
+                .from('comments')
+                .insert({
+                    user_id: currentUser.id,
+                    user_name: userName,
+                    user_avatar: userAvatar,
+                    item_type: ITEM_TYPE,
+                    content: content,
+                    likes: 0
+                })
+                .select();
+            
+            if (error) {
+                alert('发表失败：' + error.message);
+            } else {
+                input.value = '';
+                showMessage('评论发表成功！', 'success');
+                loadComments();
+            }
+        }
+        window.submitComment = submitComment;
+        
+        // 点赞评论
+        async function likeComment(commentId, element) {
+            if (!currentUser) {
+                alert('请先登录');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            // 获取当前点赞数
+            const { data: comment } = await supabase
+                .from('comments')
+                .select('likes')
+                .eq('id', commentId)
+                .single();
+            
+            const newLikes = (comment?.likes || 0) + 1;
+            
+            const { error } = await supabase
+                .from('comments')
+                .update({ likes: newLikes })
+                .eq('id', commentId);
+            
+            if (!error) {
+                const likeSpan = element.querySelector('span');
+                if (likeSpan) likeSpan.textContent = newLikes;
+                showMessage('点赞成功！', 'success');
+            }
+        }
+        window.likeComment = likeComment;
+        
+        // 删除评论
+        async function deleteComment(commentId) {
+            if (!confirm('确定要删除这条评论吗？')) return;
+            
+            const { error } = await supabase
+                .from('comments')
+                .delete()
+                .eq('id', commentId);
+            
+            if (!error) {
+                showMessage('评论已删除', 'success');
+                loadComments();
+            } else {
+                alert('删除失败：' + error.message);
+            }
+        }
+        window.deleteComment = deleteComment;
+        
+        // 辅助函数
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return '刚刚';
+            if (diff < 3600) return `${Math.floor(diff / 60)}分钟前`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)}小时前`;
+            return `${Math.floor(diff / 86400)}天前`;
+        }
+        
+        function showMessage(msg, type) {
+            // 简单提示
+            alert(msg);
+        }
+        
+        // 页面初始化
+        checkLoginStatus();
+    </script>
+</body>
+</html>

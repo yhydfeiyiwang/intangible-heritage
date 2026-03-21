@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>京剧 - 中国非遗文化传承平台</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Microsoft YaHei", sans-serif; }
+        body { background: #f7f3ee; min-height: 100vh; display: flex; flex-direction: column; }
+        .top-bar { background: #8c5c2d; color: #fff; padding: 12px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .top-bar .logo { font-size: 18px; font-weight: bold; }
+        .top-bar .user a { color: #fff; margin-left: 20px; text-decoration: none; }
+        .top-bar .user span { color: #ffd966; }
+        .nav { background: #6d4422; padding: 14px 0; text-align: center; }
+        .nav a { color: #fff; margin: 0 20px; text-decoration: none; font-size: 17px; }
+        .nav a:hover, .nav a.active { text-decoration: underline; color: #ffd966; }
+        .container { max-width: 1000px; margin: 30px auto; background: #fff; padding: 40px; border-radius: 12px; box-shadow: 0 3px 12px rgba(0,0,0,0.1); }
+        .action-bar { display: flex; justify-content: space-between; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
+        .favorite-btn { display: flex; align-items: center; gap: 8px; padding: 10px 24px; background: #f7f3ee; border: 2px solid #e0d5c8; border-radius: 40px; cursor: pointer; transition: all 0.3s; }
+        .favorite-btn:hover { transform: scale(1.02); }
+        .favorite-btn.favorited { background: #ff6b6b; border-color: #ff6b6b; color: #fff; }
+        .heart { font-size: 20px; color: #ff6b6b; }
+        .favorite-btn.favorited .heart { color: #fff; }
+        .container h2 { color: #8c5c2d; margin-bottom: 20px; font-size: 28px; }
+        .container p { font-size: 17px; line-height: 1.9; color: #333; margin-bottom: 20px; }
+        .master-box { background: #f7f3ee; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .master-box h3 { color: #8c5c2d; margin-bottom: 10px; }
+        .comments-section { margin-top: 40px; border-top: 2px solid #e8ddd0; padding-top: 30px; }
+        .comments-title { font-size: 22px; color: #8c5c2d; margin-bottom: 20px; display: flex; gap: 10px; }
+        .comment-input-area { background: #fefaf5; border-radius: 16px; padding: 20px; margin-bottom: 30px; }
+        .comment-input-area textarea { width: 100%; padding: 15px; border: 1px solid #e0d5c8; border-radius: 12px; font-size: 15px; resize: vertical; min-height: 100px; font-family: inherit; }
+        .comment-input-area textarea:focus { outline: none; border-color: #8c5c2d; }
+        .comment-submit { margin-top: 12px; padding: 10px 28px; background: #8c5c2d; color: #fff; border: none; border-radius: 30px; cursor: pointer; }
+        .comment-submit:hover { background: #6d4422; }
+        .comments-list { margin-top: 20px; }
+        .comment-item { background: #fff; border-bottom: 1px solid #f0e8df; padding: 20px 0; display: flex; gap: 15px; }
+        .comment-avatar { width: 48px; height: 48px; background: #e8ddd0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .comment-content { flex: 1; }
+        .comment-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+        .comment-name { font-weight: bold; color: #5a3a2a; }
+        .comment-time { font-size: 12px; color: #9b7a5a; }
+        .comment-text { color: #4a3a2a; line-height: 1.6; margin-bottom: 10px; }
+        .comment-actions { display: flex; gap: 15px; }
+        .comment-like { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; color: #9b7a5a; }
+        .comment-like:hover { color: #ff6b6b; }
+        .comment-delete { cursor: pointer; font-size: 13px; color: #c33; display: none; }
+        .comment-item.own .comment-delete { display: inline; }
+        .no-comments { text-align: center; color: #9b7a5a; padding: 40px; }
+        .login-prompt { text-align: center; padding: 30px; background: #fef5e8; border-radius: 12px; color: #8c5c2d; }
+        .login-prompt a { color: #8c5c2d; font-weight: bold; }
+        .footer { background: #2e241d; color: #e9dbc9; text-align: center; padding: 25px; margin-top: 30px; }
+        @media (max-width: 768px) { .container { padding: 20px; } .action-bar { flex-direction: column; align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo">🏮 中国非遗文化传承平台</div>
+        <div class="user" id="userArea"><a href=" ">登录</a ><a href="register.html">注册</a ></div>
+    </div>
+    <div class="nav">
+        <a href="index.html">首页</a ><a href="paper.html">剪纸艺术</a ><a href="opera.html" class="active">京剧</a ><a href="shadow.html">皮影戏</a ><a href="iron.html">打铁花</a ><a href="profile.html">个人中心</a >
+    </div>
+    <div class="container">
+        <div class="action-bar"><div class="favorite-btn" id="favoriteBtn" onclick="toggleFavorite()"><span class="heart">❤️</span><span id="favoriteText">收藏</span></div></div>     <h2>京剧 · 国粹经典</h2>
+        <p>京剧，又称平剧、京戏，是中国影响最大的戏曲剧种，有"国剧"之称。2006年列入第一批国家级非物质文化遗产名录，2010年入选联合国教科文组织人类非物质文化遗产代表作名录。京剧起源于清代乾隆年间，四大徽班进京后与汉调、昆曲、秦腔等融合演变而成。京剧以"唱、念、做、打"为表演核心，形成了一套完整的表演体系。角色分为生、旦、净、丑四大行当，各行当又有细分工。京剧脸谱色彩丰富，红色代表忠勇，白色代表奸诈，黑色代表刚直，金色代表神佛。京剧剧目丰富，经典作品有《霸王别姬》《贵妃醉酒》《空城计》《穆桂英挂帅》等。京剧艺术大师梅兰芳将京剧推向世界，使这一东方艺术瑰宝享誉全球。</p >
+        <div class="master-box">
+            <h3>代表性传承人：梅葆玖</h3>
+            <p>梅葆玖（1934-2016），祖籍江苏泰州，京剧艺术大师梅兰芳之子，国家级非物质文化遗产"京剧"代表性传承人，梅派艺术第二代传人。梅葆玖自幼跟随父亲学艺，深得梅派艺术精髓，工旦行，嗓音甜美圆润，表演端庄大方。他一生致力于梅派艺术的传承与发展，整理复排了《贵妃醉酒》《霸王别姬》《凤还巢》等经典剧目。梅葆玖培养了大批优秀弟子，如李胜素、董圆圆、魏海敏等，使梅派艺术薪火相传。他曾任北京京剧院梅兰芳京剧团团长，多次率团赴海外演出，将京剧艺术传播到世界各地。梅葆玖常说："父亲把梅派艺术交给了我，我要把它完整地传下去。"他的一生，是为京剧艺术奉献的一生。</p >
+        </div>
+        <div class="comments-section"><div class="comments-title">💬 评论区 <span id="commentCount">(0)</span></div><div id="commentArea"></div></div>
+    </div>
+    <div class="footer"><p>非遗文化传承 © 2026 | 守护非遗 · 赓续文脉</p ></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://lpalwlrvgdlslsxqxsxtqks.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_iVeYN3aI8DpUhwy5Z6k6g_uUgvm...';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const ITEM_TYPE = 'opera';
+        const ITEM_NAME = '京剧';
+        let currentUser = null, isFavorited = false;
+        
+        async function checkLoginStatus() {
+            const { data: { session } } = await supabase.auth.getSession();
+            const userDiv = document.getElementById('userArea');
+            if (session) {
+                currentUser = session.user;
+                const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+                userDiv.innerHTML = `<span>欢迎，${userName}</span><a href=" " onclick="logout()">退出</a >`;
+                checkFavoriteStatus(); loadComments(); renderCommentArea();
+            } else { userDiv.innerHTML = `<a href="login.html">登录</a ><a href="register.html">注册</a >`; renderLoginPrompt(); }
+        }
+        async function logout() { await supabase.auth.signOut(); window.location.reload(); }
+        window.logout = logout;
+        async function checkFavoriteStatus() {
+            if (!currentUser) return;
+            const { data } = await supabase.from('favorites').select('id').eq('user_id', currentUser.id).eq('item_type', ITEM_TYPE).single();
+            if (data) { isFavorited = true; updateFavoriteUI(); }
+        }
+        function updateFavoriteUI() {
+            const btn = document.getElementById('favoriteBtn');
+            const textSpan = document.getElementById('favoriteText');
+            if (isFavorited) { btn.classList.add('favorited'); textSpan.textContent = '已收藏'; }
+            else { btn.classList.remove('favorited'); textSpan.textContent = '收藏'; }
+        }
+        async function toggleFavorite() {
+            if (!currentUser) { alert('请先登录'); window.location.href = 'login.html'; return; }
+            if (isFavorited) { await supabase.from('favorites').delete().eq('user_id', currentUser.id).eq('item_type', ITEM_TYPE); isFavorited = false; }
+            else { await supabase.from('favorites').insert({ user_id: currentUser.id, item_type: ITEM_TYPE, item_name: ITEM_NAME }); isFavorited = true; }
+            updateFavoriteUI();
+        }
+        window.toggleFavorite = toggleFavorite;
+        async function loadComments() {
+            const { data } = await supabase.from('comments').select('*').eq('item_type', ITEM_TYPE).order('created_at', { ascending: false });
+            renderCommentsList(data || []);
+            document.getElementById('commentCount').textContent = `(${data?.length || 0})`;
+        }
+        function renderCommentsList(comments) {
+            const container = document.getElementById('commentArea');
+            const oldList = document.querySelector('.comments-list');
+            if (oldList) oldList.remove();
+            if (comments.length === 0) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'no-comments';
+                emptyDiv.innerHTML = '✨ 还没有评论，快来分享你对京剧的喜爱吧 ✨';
+                container.appendChild(emptyDiv);
+                return;
+            }
+            const commentsList = document.createElement('div');
+            commentsList.className = 'comments-list';
+            comments.forEach(comment => {
+                const isOwn = currentUser && comment.user_id === currentUser.id;
+                const commentDiv = document.createElement('div');
+                commentDiv.className = `comment-item ${isOwn ? 'own' : ''}`;
+                commentDiv.innerHTML = `
+                    <div class="comment-avatar">${comment.user_avatar || '🎭'}</div>
+                    <div class="comment-content">
+                        <div class="comment-header"><span class="comment-name">${escapeHtml(comment.user_name)}</span><span class="comment-time">${formatTime(comment.created_at)}</span></div>
+                        <div class="comment-text">${escapeHtml(comment.content)}</div>
+                        <div class="comment-actions">
+                            <div class="comment-like" onclick="likeComment('${comment.id}', this)">❤️ <span>${comment.likes || 0}</span></div>
+                            ${isOwn ? `<div class="comment-delete" onclick="deleteComment('${comment.id}')">删除</div>` : ''}
+                        </div>
+                    </div>
+                `;commentsList.appendChild(commentDiv);
+            });
+            container.appendChild(commentsList);
+        }
+        function renderCommentArea() {
+            if (!currentUser) return;
+            const container = document.getElementById('commentArea');
+            if (document.querySelector('.comment-input-area')) return;
+            const inputDiv = document.createElement('div');
+            inputDiv.className = 'comment-input-area';
+            inputDiv.innerHTML = `<textarea id="commentInput" placeholder="聊聊你最喜欢的京剧选段..."></textarea><button class="comment-submit" onclick="submitComment()">发表评论</button>`;
+            container.insertBefore(inputDiv, container.firstChild);
+        }
+        function renderLoginPrompt() {
+            const container = document.getElementById('commentArea');
+            container.innerHTML = `<div class="login-prompt">💬 <a href=" ">登录</a > 后可以发表评论和收藏</div>`;
+        }
+        async function submitComment() {
+            const input = document.getElementById('commentInput');
+            const content = input.value.trim();
+            if (!content) { alert('请输入评论内容'); return; }
+            const userName = currentUser.user_metadata?.username || currentUser.email.split('@')[0];
+            const userAvatar = currentUser.user_metadata?.avatar || '🎭';
+            const { error } = await supabase.from('comments').insert({ user_id: currentUser.id, user_name: userName, user_avatar: userAvatar, item_type: ITEM_TYPE, content: content, likes: 0 });
+            if (error) { alert('发表失败：' + error.message); } else { input.value = ''; loadComments(); }
+        }
+        window.submitComment = submitComment;
+        async function likeComment(commentId, element) {
+            if (!currentUser) { alert('请先登录'); window.location.href = 'login.html'; return; }
+            const { data: comment } = await supabase.from('comments').select('likes').eq('id', commentId).single();
+            const newLikes = (comment?.likes || 0) + 1;
+            await supabase.from('comments').update({ likes: newLikes }).eq('id', commentId);
+            const likeSpan = element.querySelector('span');
+            if (likeSpan) likeSpan.textContent = newLikes;
+        }
+        window.likeComment = likeComment;
+        async function deleteComment(commentId) {
+            if (!confirm('确定删除这条评论吗？')) return;
+            await supabase.from('comments').delete().eq('id', commentId);
+            loadComments();
+        }
+       
